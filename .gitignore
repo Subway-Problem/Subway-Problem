@@ -1,0 +1,20 @@
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+# Ignore object file dirs
+.objs/
+
+# Ignore completed matrices
+matrix/
+
+# Ignore .vscode
+.vscode/
+
+# Unignore Makefiles
+!Makefile
