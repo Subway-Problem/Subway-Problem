@@ -5,6 +5,7 @@
 #include <chrono>
 #include <vector>
 #include <fstream>
+#include <string>
 #include <unistd.h>
 
 #include "data.hpp"
@@ -16,19 +17,22 @@ int main() {
     cout << "\n";
     cout << "Creating initial maps...\n";
     Graph g;
-    cout << "Finished mapping, starting graph creation...\n";
+    cout << "Finished mapping, starting cost matrix creation...\n";
+
+    // To change to the 231-node matrix, uncomment the next 5 lines and comment out the following 4. 
 
     // Data selectData("../gtfs/select_stops.txt");
     // vector<int> selectNodes(selectData.getNumRows(), 0);
     // int NUM_SELECT = selectNodes.size();
-    // cout << "number of nodes: " << NUM_SELECT << endl;
     // for (int i = 0; i < NUM_SELECT; ++i)
     //     selectNodes[i] = stoi(selectData.getValue(1, i));
+    // string fileName = "select_matrix.bin";
 
     vector<int> selectNodes(NUM_NODES, 0);
     int NUM_SELECT = NUM_NODES;
     for (int i = 0; i < NUM_NODES; ++i)
         selectNodes[i] = i;
+    string fileName = "full_matrix.bin";
 
     vector<vector<int>> costMatrix;
     costMatrix.resize(NUM_TIMES, vector<int>(NUM_SELECT * NUM_SELECT));
@@ -52,20 +56,20 @@ int main() {
             else if (i == pos) cout << ">";
             else cout << " ";
         }
-        cout << "]" << int(progress * 100.0) << "%\t" << "matrix completed in " << time << " ms\r";
+        cout << "]" << int(progress * 100.0) << "%\t" << "time matrix completed in " << time << " ms\r";
         cout.flush();
     }
     auto t4 = chrono::high_resolution_clock::now();
     auto d2 = chrono::duration_cast<chrono::seconds>(t4 - t3);
-    cout << "\rGraph completed in " << d2.count() << " seconds!";
+    cout << "\rCost matrix completed in " << d2.count() << " seconds!";
     for (int i = 0; i < 120; ++i) cout << " ";
     cout.flush();
     usleep(500000);
 
-    cout << "\nWriting graph to file..." << endl;
+    cout << "\nWriting matrix to file..." << endl;
 
     auto t5 = chrono::high_resolution_clock::now();
-    ofstream fout("../graph/full_graph.bin", ios::out | ios::binary);
+    ofstream fout("../graph/" + fileName, ios::out | ios::binary);
     for (int i = 0; i < NUM_TIMES; ++i) {
         fout.write((char*)&costMatrix[i][0], NUM_SELECT * NUM_SELECT * sizeof(int));
         costMatrix[i].clear();
