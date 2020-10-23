@@ -28,10 +28,10 @@ Next, you can use the ACO algorithm. In main.cpp, go to `main()` and change the 
 
 To run it, navigate to the ant directory:
 
-`cd ant`
+`$ cd ant`
 
 And run the appropriate make command:
 
-`make run`
+`$ make run`
 
 It will run the ACO algorithm, and depending on the parameters defined at the top of ant/main.cpp, it will work or not. As I mentioned, the ACO algorithm is very dependent on parameters. Anyways, that's all!
