@@ -13,40 +13,40 @@
 #include "cmatrix.hpp"
 #include "pmatrix.hpp"
 #include "path.hpp"
+#include "constants.hpp"
 
 using namespace std;
 
-constexpr int NUM_NODES = 472;
-constexpr int NUM_ANTS = 25;
-constexpr int NUM_ITER = 20000;
-
-constexpr int Q = 50000;
-
 int main() {
-
     srand(time(NULL));
+    string matrixFile = "full_matrix.bin";
 
     cout << "Loading Cost Matrix" << endl;
-    CostMatrix* M_c = new CostMatrix("../matrix/full_matrix.bin");
+    CostMatrix* M_c = new CostMatrix("../matrix/" + matrixFile);
     cout << "Finished loading Cost Matrix" << endl;
     PheromoneMatrix* M_p = new PheromoneMatrix();
 
     Path best;
 
     for (int x = 0; x < NUM_ITER; ++x) {
-        // Loops through each ant, each generating an associated path, adding it to an iteration list
+        // Loops through each ant, each generating an associated path, adding it to a list of paths per iteration
         vector<Path> paths;
         for (int k = 0; k < NUM_ANTS; ++k) {
-            paths.emplace_back(M_c, M_p); // problem here
+            paths.emplace_back(M_c, M_p);
         }
+
+        // Sorts the list of paths by their duration
         sort(paths.begin(), paths.end(),
         [] (const Path& p1, const Path& p2) -> bool {
             return p1.getDist() < p2.getDist();
         });
+
+        // Acquires the duration and vector of nodes for the best path of the iteration
         int L_k = paths[0].getDist();
         const vector<int>& path = paths[0].getPath();
         cout << "it: " << x << "\tL_k: " << L_k << endl;
 
+        // Uses the duration and path to update the global pheromone matrix
         double ph_new = Q / (double)L_k;
         for (int m = 0; m < NUM_NODES - 1; ++m) {
             M_p->addPheromone(path[m], path[m + 1], ph_new);
@@ -56,17 +56,12 @@ int main() {
         best = paths[0];
     }
 
-    // int node = 0;
-    // for (int j = 0; j < NUM_NODES; ++j) {
-    //     cout << node << " -> " << j << ": " << M_p->getPheromoneLevel(node, j) << "\n";
-    // }
-
+    // Prints out the overall best path and its duration
     vector<int> bestPath = best.getPath();
     for (int i = 0; i < NUM_NODES; ++i) {
         cout << bestPath[i] << endl;
     }
-
-    cout << "done" << endl;
+    cout << "Duration: " << best.getDist() << endl;
 
     return 0;
 }

@@ -10,16 +10,9 @@
 #include "path.hpp"
 #include "cmatrix.hpp"
 #include "pmatrix.hpp"
+#include "constants.hpp"
 
 using namespace std;
-
-constexpr int NUM_NODES = 472;
-constexpr int startNode = 0;
-constexpr int startTime = 26460;
-
-constexpr double Q = 50000;
-constexpr double alpha = 1.2;
-constexpr double beta = 2.5;
 
 vector<double> Path::_probs_ij(int i, int t, const vector<bool>& visited, CostMatrix* M_c, PheromoneMatrix* M_p) {
     vector<double> probs(NUM_NODES, 0);
@@ -33,7 +26,6 @@ vector<double> Path::_probs_ij(int i, int t, const vector<bool>& visited, CostMa
             tau_ij = M_p->getPheromoneLevel(i, j);
             eta_ij = (double)1 / M_c->getCost_ijt(i, j, t);
             probs[j] = pow(tau_ij, alpha) * pow(eta_ij, beta);
-            //probs[j] = tau_ij * eta_ij;
         }
     }
     double sum = 0;

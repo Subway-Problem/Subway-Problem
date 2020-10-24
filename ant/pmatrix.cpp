@@ -6,13 +6,9 @@
 #include <limits>
 
 #include "pmatrix.hpp"
+#include "constants.hpp"
 
 using namespace std;
-
-constexpr int NUM_NODES = 472;
-constexpr double EVAP = 0.01;
-constexpr double TAU_MAX = 50;
-constexpr double TAU_MIN = 0.1;
 
 PheromoneMatrix::PheromoneMatrix() {
     _M_p.assign(NUM_NODES * NUM_NODES, TAU_MAX);
@@ -23,7 +19,7 @@ void PheromoneMatrix::setPheromoneLevel(int i, int j, double pheromone) {
 }
 
 void PheromoneMatrix::addPheromone(int i, int j, double p_new) {
-    if (_M_p[NUM_NODES * i + j] + p_new < TAU_MAX) _M_p[NUM_NODES * i + j] += p_new;
+    _M_p[NUM_NODES * i + j] += p_new;
 }
 
 double PheromoneMatrix::getPheromoneLevel(int i, int j) const {
@@ -31,7 +27,10 @@ double PheromoneMatrix::getPheromoneLevel(int i, int j) const {
 }
 
 void PheromoneMatrix::updatePheromoneLevel() {
+    // If a pheromone level is greater than TAU_MAX, it is set to TAU_MAX
+    // If the pheromone would evaporate to a value above TAU_MIN, it proceeds with the evaporation
     for (int i = 0; i < NUM_NODES * NUM_NODES; ++i) {
-        if (_M_p[i] * ((double)1 - EVAP) > TAU_MIN) _M_p[i] *= ((double)1 - EVAP);
+        if (_M_p[i] > TAU_MAX) _M_p[i] = TAU_MAX;
+        if (_M_p[i] * (1.0 - EVAP) > TAU_MIN) _M_p[i] *= (1.0 - EVAP);
     }
 }
