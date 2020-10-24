@@ -16,7 +16,6 @@ private:
 
 public:
     CostMatrix(string filename);
-
-    int getCost_ijt(int time, int origin, int destination);
+    int getCost_ijt(int i, int j, int t) const;
     void printMatrix(int time);
 };

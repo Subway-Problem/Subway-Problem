@@ -1,5 +1,5 @@
 EXE = ant
-OBJS = main.o pmatrix.o cmatrix.o
+OBJS = main.o pmatrix.o cmatrix.o path.o
 CLEAN_RM = 
 
 # 0	- Default, optimization for compilation time

@@ -14,7 +14,7 @@
 using namespace std;
 
 constexpr int NUM_TIMES = 2880;
-constexpr int NUM_NODES = 231;
+constexpr int NUM_NODES = 472;
 
 CostMatrix::CostMatrix(string filename) {
     _M_c.resize(NUM_TIMES, vector<int>(NUM_NODES * NUM_NODES));
@@ -38,8 +38,6 @@ void CostMatrix::printMatrix(int time) {
     cout << '\n';
 }
 
-int CostMatrix::getCost_ijt(int time, int origin, int destination) {
-    int arrivalTime = _M_c[(time % 86400) / 30][NUM_NODES * (size_t)origin + (size_t)destination];
-    //return arrivalTime - (time % 86400);
-    return arrivalTime;
+int CostMatrix::getCost_ijt(int i, int j, int t) const {
+    return _M_c[(t % 86400) / 30][NUM_NODES * i + j];
 }

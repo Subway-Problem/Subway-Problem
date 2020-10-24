@@ -14,10 +14,8 @@ private:
 
 public:
     PheromoneMatrix();
-
-public:
     void setPheromoneLevel(int i, int j, double pheromone);
     void updatePheromoneLevel();
     void addPheromone(int i, int j, double p_new);
-    double getPheromoneLevel(int i, int j);
+    double getPheromoneLevel(int i, int j) const;
 };

@@ -9,10 +9,10 @@
 
 using namespace std;
 
-constexpr int NUM_NODES = 231;
+constexpr int NUM_NODES = 472;
 constexpr double EVAP = 0.01;
-constexpr double TAU_MAX = 100;
-constexpr double TAU_MIN = (double)1 / TAU_MAX;
+constexpr double TAU_MAX = 50;
+constexpr double TAU_MIN = 0.1;
 
 PheromoneMatrix::PheromoneMatrix() {
     _M_p.assign(NUM_NODES * NUM_NODES, TAU_MAX);
@@ -26,13 +26,12 @@ void PheromoneMatrix::addPheromone(int i, int j, double p_new) {
     if (_M_p[NUM_NODES * i + j] + p_new < TAU_MAX) _M_p[NUM_NODES * i + j] += p_new;
 }
 
+double PheromoneMatrix::getPheromoneLevel(int i, int j) const {
+    return _M_p[NUM_NODES * i + j];
+}
+
 void PheromoneMatrix::updatePheromoneLevel() {
     for (int i = 0; i < NUM_NODES * NUM_NODES; ++i) {
         if (_M_p[i] * ((double)1 - EVAP) > TAU_MIN) _M_p[i] *= ((double)1 - EVAP);
-        else continue;
     }
-}
-
-double PheromoneMatrix::getPheromoneLevel(int i, int j) {
-    return _M_p[NUM_NODES * i + j];
 }
