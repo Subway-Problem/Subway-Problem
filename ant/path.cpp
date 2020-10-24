@@ -1,11 +1,12 @@
 // @author: Asher Desai
 // @file: path.cpp
-// @description: 
+// @description: Defines Path member functions
 
 #include <vector>
 #include <cmath>
 #include <iostream>
 #include <cstdlib>
+#include <limits>
 
 #include "path.hpp"
 #include "cmatrix.hpp"
@@ -14,18 +15,20 @@
 
 using namespace std;
 
-vector<double> Path::_probs_ij(int i, int t, const vector<bool>& visited, CostMatrix* M_c, PheromoneMatrix* M_p) {
+// Generates probability distribution function for each node from a given node at a certain time, depending on which 
+// nodes have been visited previously, taking pheromone levels into account
+vector<double> Path::_probs(int i, int t, const vector<bool>& visited, CostMatrix* costMatrix, PheromoneMatrix* phMatrix) {
     vector<double> probs(NUM_NODES, 0);
-    double tau_ij;
-    double eta_ij;
+    double tau;
+    double eta;
     for (int j = 0; j < NUM_NODES; ++j) {
         if (visited[j] == 1) {
             continue;
         }
         else {
-            tau_ij = M_p->getPheromoneLevel(i, j);
-            eta_ij = (double)1 / M_c->getCost_ijt(i, j, t);
-            probs[j] = pow(tau_ij, alpha) * pow(eta_ij, beta);
+            tau = phMatrix->get(i, j);
+            eta = (double)1 / costMatrix->get(i, j, t);
+            probs[j] = pow(tau, ALPHA) * pow(eta, BETA);
         }
     }
     double sum = 0;
@@ -36,12 +39,15 @@ vector<double> Path::_probs_ij(int i, int t, const vector<bool>& visited, CostMa
     return probs;
 }
 
+// Default constructor for Path
 Path::Path() {
-    _path.assign(NUM_NODES, 0);
-    _dist = 0;
+    _path.assign(NUM_NODES, -1);
+    _dist = 999999999;
 }
 
-Path::Path(CostMatrix* M_c, PheromoneMatrix* M_p) {
+// Models individual ant behavior when creating a path, calling the probability distribution function
+// and using a random sample to choose the next node in the path; also sets path distance
+Path::Path(CostMatrix* costMatrix, PheromoneMatrix* phMatrix) {
     _path.assign(NUM_NODES, 0);
     _path[0] = startNode;
     vector<bool> visited(NUM_NODES, false);
@@ -50,9 +56,9 @@ Path::Path(CostMatrix* M_c, PheromoneMatrix* M_p) {
     int i, j, dt = 0;
     for (int m = 0; m < NUM_NODES - 1; ++m) {
         i = _path[m];
+        j = _path[m + 1];
         visited[i] = true;
-        //cout << "it:" << m << " i:" << i << " t:" << t << endl;
-        const vector<double>& probs = _probs_ij(i, t, visited, M_c, M_p);
+        const vector<double>& probs = _probs(i, t, visited, costMatrix, phMatrix);
         vector<double> distribution(NUM_NODES, 0);
         distribution[0] = probs[0];
         for (int n = 1; n < NUM_NODES; ++n) {
@@ -66,17 +72,19 @@ Path::Path(CostMatrix* M_c, PheromoneMatrix* M_p) {
             }
         }
         _path[m + 1] = j;
-        dt = M_c->getCost_ijt(i, j, t);
+        dt = costMatrix->get(i, j, t);
         L_k += dt;
         t += dt;
     }
     _dist = L_k;
 }
 
+// Returns the path vector
 vector<int> Path::getPath() const {
     return _path;
 }
 
+// Return the path distance/duration
 int Path::getDist() const {
     return _dist;
 }

@@ -1,8 +1,8 @@
 // @author: Asher Desai
-// @file: graph.cpp
-// @description: loads the cost matrix from full_matrix.bin (or select_matrix.bin) into the Matrix object, representing a cost matrix
+// @file: cmatrix.cpp
+// @description: loads the cost matrix from full_matrix.bin (or select_matrix.bin) into the CostMatrix object, representing a cost matrix
 // that gives the time it takes to get from any node to any other node at a given time. Also defines a function to access the cost
-// matrix, which is used by the algorithm (genetic, ant colony, or other)
+// matrix, which is used by the algorithm (ant colony here, but same code applies to others)
 
 #include <vector>
 #include <iostream>
@@ -14,28 +14,20 @@
 
 using namespace std;
 
+// Constructor for CostMatrix, loads binary data from specified file
 CostMatrix::CostMatrix(string filename) {
-    _M_c.resize(NUM_TIMES, vector<int>(NUM_NODES * NUM_NODES));
+    _costMatrix.resize(NUM_TIMES, vector<int>(NUM_NODES * NUM_NODES));
     ifstream fin(filename, ios::in | ios::binary);
     
     if (fin.good()) {
         for (int i = 0; i < NUM_TIMES; ++i) {
-            fin.read((char*)&_M_c[i][0], NUM_NODES * NUM_NODES * sizeof(int));
+            fin.read((char*)&_costMatrix[i][0], NUM_NODES * NUM_NODES * sizeof(int));
         }
     }
     fin.close();
 }
 
-void CostMatrix::printMatrix(int time) {
-    for (unsigned i = 0; i < NUM_NODES; ++i) {
-        for (unsigned j = 0; j < NUM_NODES; ++j) {
-            cout << _M_c[time][NUM_NODES * i + j] << '\t';
-        }
-        cout << '\n';
-    }
-    cout << '\n';
-}
-
-int CostMatrix::getCost_ijt(int i, int j, int t) const {
-    return _M_c[(t % 86400) / 30][NUM_NODES * i + j];
+// Returns the cost (duration) of going from node i to node j at time t
+int CostMatrix::get(int i, int j, int t) const {
+    return _costMatrix[(t % 86400) / 30][NUM_NODES * i + j];
 }

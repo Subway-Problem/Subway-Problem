@@ -14,7 +14,7 @@ This is the primary repository for the project. Written in C++, it has a source 
 
 ## Instructions
 
-Before doing anything else, you must create the cost matrix. This takes a while, but the 231-node matrix takes about half the time that the 472-node matrix does. I believe the 472-node matrix takes about 45 minutes to build. You can change which one you use by following the intructions in main.cpp at line 21. Start by navigating to the create directory from the repository home:
+Before doing anything else, you must create the cost matrix. This takes a while, but the 231-node matrix takes about half the time that the 472-node matrix does. I believe the 472-node matrix takes about 45 minutes to build. You can change which one you use by following the intructions in create/main.cpp at line 21. Start by navigating to the create directory from the repository home:
 
 `$ cd create`
 
@@ -24,7 +24,7 @@ And running the appropriate make command:
 
 This will start the process of matrix creation.
 
-Next, you can use the ACO algorithm. In main.cpp, go to `main()` and change the file name at line 22 to the appropriate matrix file. _**WARNING:**_ You must adjust `constexpr int NUM_NODES` in constants.hpp to either 231 or 472 depending on which matrix you use.
+Next, you can use the ACO algorithm. In ant/main.cpp, go to `main()` and change the file name at line 23 to the appropriate matrix file. _**WARNING:**_ You must adjust `constexpr int NUM_NODES` in ant/constants.hpp to either 231 or 472 depending on which matrix you use.
 
 To run it, navigate to the ant directory:
 

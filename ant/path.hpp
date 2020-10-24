@@ -1,6 +1,6 @@
 // @author: Asher Desai
 // @file: path.hpp
-// @description: 
+// @description: Defines Path class, controls behavior for single ants
 
 #pragma once
 
@@ -16,11 +16,11 @@ private:
     vector<int> _path;
     int _dist;
 
-    vector<double> _probs_ij(int i, int time, const vector<bool>& visited, CostMatrix* M_c, PheromoneMatrix* M_p);
+    vector<double> _probs(int i, int t, const vector<bool>& visited, CostMatrix* costMatrix, PheromoneMatrix* phMatrix);
 
 public:
     Path();
-    Path(CostMatrix* M_c, PheromoneMatrix* M_p);
+    Path(CostMatrix* costMatrix, PheromoneMatrix* phMatrix);
     vector<int> getPath() const;
     int getDist() const;
 };

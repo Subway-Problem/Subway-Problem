@@ -1,6 +1,6 @@
 // @author: Asher Desai
 // @file: pheromone.hpp
-// @description: 
+// @description: Defines the PheromoneMatrix class
 
 #pragma once
 
@@ -10,12 +10,13 @@ using namespace std;
 
 class PheromoneMatrix {
 private:
-    vector<double> _M_p;
+    vector<double> _phMatrix;
 
 public:
     PheromoneMatrix();
-    void setPheromoneLevel(int i, int j, double pheromone);
-    void updatePheromoneLevel();
-    void addPheromone(int i, int j, double p_new);
-    double getPheromoneLevel(int i, int j) const;
+
+    double get(int i, int j) const;
+    void add(int i, int j, double p_new);
+    void update();
+    void reset();
 };

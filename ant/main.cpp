@@ -1,10 +1,11 @@
 // @author: Asher Desai
 // @file: main.cpp
-// @description: 
+// @description: Main, controls iteration and calls the ant functions
 
 #include <vector>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <cmath>
 #include <random>
 #include <limits>
@@ -22,18 +23,19 @@ int main() {
     string matrixFile = "full_matrix.bin";
 
     cout << "Loading Cost Matrix" << endl;
-    CostMatrix* M_c = new CostMatrix("../matrix/" + matrixFile);
+    CostMatrix* costMatrix = new CostMatrix("../matrix/" + matrixFile);
     cout << "Finished loading Cost Matrix" << endl;
-    PheromoneMatrix* M_p = new PheromoneMatrix();
+    PheromoneMatrix* phMatrix = new PheromoneMatrix();
 
-    Path best;
+    Path bestPath;
+    int bestDist = 999999999;
+    int stallCount = 0;
 
-    for (int x = 0; x < NUM_ITER; ++x) {
+    for (int i = 0; i < NUM_ITER; ++i) {
         // Loops through each ant, each generating an associated path, adding it to a list of paths per iteration
         vector<Path> paths;
-        for (int k = 0; k < NUM_ANTS; ++k) {
-            paths.emplace_back(M_c, M_p);
-        }
+        for (int j = 0; j < NUM_ANTS; ++j)
+            paths.emplace_back(costMatrix, phMatrix);
 
         // Sorts the list of paths by their duration
         sort(paths.begin(), paths.end(),
@@ -42,26 +44,49 @@ int main() {
         });
 
         // Acquires the duration and vector of nodes for the best path of the iteration
-        int L_k = paths[0].getDist();
+        int dist = paths[0].getDist();
+        
         const vector<int>& path = paths[0].getPath();
-        cout << "it: " << x << "\tL_k: " << L_k << endl;
 
         // Uses the duration and path to update the global pheromone matrix
-        double ph_new = Q / (double)L_k;
-        for (int m = 0; m < NUM_NODES - 1; ++m) {
-            M_p->addPheromone(path[m], path[m + 1], ph_new);
+        double ph_new = Q / (double)dist;
+        for (int k = 0; k < NUM_NODES - 1; ++k) {
+            phMatrix->add(path[k], path[k + 1], pow(ph_new, ALPHA));
         }
-        M_p->updatePheromoneLevel();
+        phMatrix->update();
 
-        best = paths[0];
+
+        // Handles the recalibration count
+        if (dist < bestDist) {
+            bestDist = dist;
+            stallCount = 0;
+        }
+        else ++stallCount;
+
+        // Records best overall path
+        if (dist < bestPath.getDist())
+            bestPath = paths[0];
+
+        cout << setfill('0') << setw(6) << i 
+            << "  dist: " << setfill('0') << setw(6) << dist 
+            << "  best: " << setfill('0') << setw(6) << bestPath.getDist() << endl;
+
+        // If there has been no change in the best path duration for 2500 iterations, pheromones are reset
+        if (stallCount > RESET_COUNT) {
+            cout << "RESETTING PHEROMONE" << endl;
+            phMatrix->reset();
+            bestDist = 999999999;
+            stallCount = 0;
+        }
     }
 
     // Prints out the overall best path and its duration
-    vector<int> bestPath = best.getPath();
+    vector<int> p = bestPath.getPath();
+    cout << bestPath.getDist() << flush;
     for (int i = 0; i < NUM_NODES; ++i) {
-        cout << bestPath[i] << endl;
+        cout << "," << p[i] << flush;
     }
-    cout << "Duration: " << best.getDist() << endl;
+    cout << endl;
 
     return 0;
 }

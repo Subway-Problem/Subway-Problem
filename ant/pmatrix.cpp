@@ -1,36 +1,46 @@
 // @author: Asher Desai
 // @file: pheromone.cpp
-// @description: 
+// @description: Defines PheromoneMatrix member functions
 
 #include <vector>
 #include <limits>
+#include <cmath>
 
 #include "pmatrix.hpp"
 #include "constants.hpp"
 
 using namespace std;
 
+// Constructor for PheromoneMatrix
 PheromoneMatrix::PheromoneMatrix() {
-    _M_p.assign(NUM_NODES * NUM_NODES, TAU_MAX);
+    _phMatrix.assign(NUM_NODES * NUM_NODES, TAU_MAX);
 }
 
-void PheromoneMatrix::setPheromoneLevel(int i, int j, double pheromone) {
-    _M_p[NUM_NODES * i + j] = pheromone;
+// Returns pheromone values between two nodes
+double PheromoneMatrix::get(int i, int j) const {
+    return _phMatrix[NUM_NODES * i + j];
 }
 
-void PheromoneMatrix::addPheromone(int i, int j, double p_new) {
-    _M_p[NUM_NODES * i + j] += p_new;
+// Adds specified amount of pheromone between two nodes
+void PheromoneMatrix::add(int i, int j, double p_new) {
+    _phMatrix[NUM_NODES * i + j] += p_new;
 }
 
-double PheromoneMatrix::getPheromoneLevel(int i, int j) const {
-    return _M_p[NUM_NODES * i + j];
-}
-
-void PheromoneMatrix::updatePheromoneLevel() {
+// Updates the pheromone matrix after each iteration by evaporating pheromones, constrained by TAU_MIN/TAU_MAX
+void PheromoneMatrix::update() {
     // If a pheromone level is greater than TAU_MAX, it is set to TAU_MAX
     // If the pheromone would evaporate to a value above TAU_MIN, it proceeds with the evaporation
     for (int i = 0; i < NUM_NODES * NUM_NODES; ++i) {
-        if (_M_p[i] > TAU_MAX) _M_p[i] = TAU_MAX;
-        if (_M_p[i] * (1.0 - EVAP) > TAU_MIN) _M_p[i] *= (1.0 - EVAP);
+        if (_phMatrix[i] > TAU_MAX) _phMatrix[i] = TAU_MAX;
+        if (_phMatrix[i] * (1.0 - EVAP) > TAU_MIN) _phMatrix[i] *= (1.0 - EVAP);
+    }
+}
+
+// Resets the pheromone levels using a certain method **not yet determined which is best**
+void PheromoneMatrix::reset() {
+    // If there has not been enough change, pheromone levels are recalibrated to be more uniform
+    for (int i = 0; i < NUM_NODES * NUM_NODES; ++i) {
+        //_phMatrix[i] = pow(_phMatrix[i], RESET_FACTOR);
+        _phMatrix[i] = TAU_MAX;
     }
 }
