@@ -17,6 +17,6 @@ public:
 
     double get(int i, int j) const;
     void add(int i, int j, double p_new);
-    void update();
+    void update(double tau_max, double tau_min);
     void reset();
 };

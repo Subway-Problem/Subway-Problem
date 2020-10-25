@@ -20,6 +20,7 @@ private:
 
 public:
     Path();
+    Path(CostMatrix* costMatrix);
     Path(CostMatrix* costMatrix, PheromoneMatrix* phMatrix);
     vector<int> getPath() const;
     int getDist() const;

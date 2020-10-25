@@ -42,7 +42,38 @@ vector<double> Path::_probs(int i, int t, const vector<bool>& visited, CostMatri
 // Default constructor for Path
 Path::Path() {
     _path.assign(NUM_NODES, -1);
-    _dist = 999999999;
+    _dist = 1500000;
+}
+
+// Uses Nearest Neighbor to create a path
+Path::Path(CostMatrix* costMatrix) {
+    _path.assign(NUM_NODES, 0);
+    _path[0] = startNode;
+    vector<bool> visited(NUM_NODES, false);
+    int dist = 0;
+    int t = startTime;
+    int i, j, dt = 0;
+    for (int m = 0; m < NUM_NODES - 1; ++m) {
+        i = _path[m];
+        j = _path[m + 1];
+        visited[i] = true;
+        int minCost = numeric_limits<int>::max();
+        for (int k = 0; k < NUM_NODES; ++k) {
+            if (visited[k] == 1) {
+                continue;
+            }
+            int cost = costMatrix->get(i, k, t);
+            if (cost < minCost) {
+                minCost = cost;
+                j = k;
+            }
+        }
+        _path[m + 1] = j;
+        dt = costMatrix->get(i, j, t);
+        dist += dt;
+        t += dt;
+    }
+    _dist = dist;
 }
 
 // Models individual ant behavior when creating a path, calling the probability distribution function
@@ -51,7 +82,7 @@ Path::Path(CostMatrix* costMatrix, PheromoneMatrix* phMatrix) {
     _path.assign(NUM_NODES, 0);
     _path[0] = startNode;
     vector<bool> visited(NUM_NODES, false);
-    int L_k = 0;
+    int dist = 0;
     int t = startTime;
     int i, j, dt = 0;
     for (int m = 0; m < NUM_NODES - 1; ++m) {
@@ -73,10 +104,10 @@ Path::Path(CostMatrix* costMatrix, PheromoneMatrix* phMatrix) {
         }
         _path[m + 1] = j;
         dt = costMatrix->get(i, j, t);
-        L_k += dt;
+        dist += dt;
         t += dt;
     }
-    _dist = L_k;
+    _dist = dist;
 }
 
 // Returns the path vector
