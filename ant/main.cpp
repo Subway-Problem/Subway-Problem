@@ -87,7 +87,7 @@ int main() {
         if (dist < bestPath.getDist())
             bestPath = paths[0];
 
-        printf("%6d; dist: %6d; best: %6d; 10avg: %6d; stall: %4d \n", i, dist, best_gl, avg, stallCount);
+        printf("%6d; dist: %7d; best: %7d; 10avg: %7d; stall: %4d \n", i, dist, best_gl, avg, stallCount);
 
         // If there has been no change in the best path duration for 2500 iterations, pheromones are reset
         if (stallCount > RESET_COUNT) {

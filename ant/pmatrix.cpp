@@ -40,7 +40,7 @@ void PheromoneMatrix::update(double tau_max, double tau_min) {
 void PheromoneMatrix::reset() {
     // If there has not been enough change, pheromone levels are recalibrated to be more uniform
     for (int i = 0; i < NUM_NODES * NUM_NODES; ++i) {
-        //_phMatrix[i] = pow(_phMatrix[i], RESET_FACTOR);
-        _phMatrix[i] = 1;
+        _phMatrix[i] = pow(_phMatrix[i], 1.0 - RESET_FACTOR);
+        // _phMatrix[i] = 1;
     }
 }
