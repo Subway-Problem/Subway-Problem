@@ -8,19 +8,13 @@
 #include <vector>
 #include <string>
 
-constexpr int NUM_TIMES = 2880;
-constexpr int NUM_NODES = 472;
-constexpr int NUM_SELECT = 231;
-
 using namespace std;
 
-class Matrix {
+class CostMatrix {
 private:
-    vector<vector<int>> _matrix;
+    vector<vector<int>> _costMatrix;
 
 public:
-    Matrix(string filename);
-
-    int getArrivalTime(int time, int origin, int destination);
-    void printMatrix(int time);
+    CostMatrix(string filename);
+    int get(int i, int j, int t) const;
 };

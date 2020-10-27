@@ -1,8 +1,8 @@
 // @author: Asher Desai
 // @file: cmatrix.cpp
-// @description: loads the cost matrix from full_matrix.bin (or select_matrix.bin) into the CostMatrix object, representing a cost matrix
+// @description: loads the cost matrix from full_matrix.bin (or select_matrix.bin) into the Matrix object, representing a cost matrix
 // that gives the time it takes to get from any node to any other node at a given time. Also defines a function to access the cost
-// matrix, which is used by the algorithm (ant colony here, but same code applies to others)
+// matrix, which is used by the algorithm (genetic, ant colony, or other)
 
 #include <vector>
 #include <string>

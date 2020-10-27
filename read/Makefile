@@ -1,5 +1,5 @@
 EXE = read
-OBJS = main.o matrix.o
+OBJS = main.o cmatrix.o
 CLEAN_RM = 
 
 # 0	- Default, optimization for compilation time
