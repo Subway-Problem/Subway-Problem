@@ -16,7 +16,7 @@ private:
     vector<int> _path;
     int _dist;
 
-    vector<double> _probs(int i, int t, const vector<bool>& visited, CostMatrix* costMatrix, PheromoneMatrix* phMatrix);
+    int _pickNext(int i, int t, const vector<bool>& visited, CostMatrix* costMatrix, PheromoneMatrix* phMatrix);
 
 public:
     Path();

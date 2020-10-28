@@ -10,6 +10,8 @@
 #include <random>
 #include <limits>
 #include <algorithm>
+#include <chrono>
+#include <fstream>
 
 #include "cmatrix.hpp"
 #include "pmatrix.hpp"
@@ -87,14 +89,14 @@ int main() {
         if (dist < bestPath.getDist())
             bestPath = paths[0];
 
-        printf("%6d; dist: %7d; best: %7d; 10avg: %7d; stall: %4d \n", i, dist, best_gl, avg, stallCount);
-
         // If there has been no change in the best path duration for 2500 iterations, pheromones are reset
         if (stallCount > RESET_COUNT) {
             phMatrix->reset();
             bestDist = 1500000;
             stallCount = 0;
         }
+
+        printf("%6d; dist: %7d; best: %7d; 10avg: %7d; stall: %4d;   tau_min: %6e; tau_max: %6e \n", i, dist, best_gl, avg, stallCount, tau_min, tau_max);
     }
 
     // Prints out the overall best path and its duration
@@ -105,6 +107,17 @@ int main() {
         cout << "," << p[i] << flush;
     }
     cout << endl;
+
+    ofstream fout("file.txt");
+
+    for (int n = 0; n < NUM_TIMES; ++n) {
+        int t = n * 30;
+        for (int i = 0; i < NUM_NODES - 1; ++i)
+            t += costMatrix->get(p[i], p[i + 1], t);
+        fout << n * 30 << ": " << t - n * 30 << "\n";
+    }
+
+    fout.close();
 
     return 0;
 }

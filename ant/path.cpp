@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <limits>
+#include <chrono>
 
 #include "path.hpp"
 #include "cmatrix.hpp"
@@ -15,9 +16,9 @@
 
 using namespace std;
 
-// Generates probability distribution function for each node from a given node at a certain time, depending on which 
+// Picks next node based on probability distribution function for each node from a given node at a certain time, depending on which 
 // nodes have been visited previously, taking pheromone levels into account
-vector<double> Path::_probs(int i, int t, const vector<bool>& visited, CostMatrix* costMatrix, PheromoneMatrix* phMatrix) {
+int Path::_pickNext(int i, int t, const vector<bool>& visited, CostMatrix* costMatrix, PheromoneMatrix* phMatrix) {
     vector<double> probs(NUM_NODES, 0);
     double tau;
     double eta;
@@ -34,9 +35,17 @@ vector<double> Path::_probs(int i, int t, const vector<bool>& visited, CostMatri
     double sum = 0;
     for (int n = 0; n < NUM_NODES; ++n)
         sum += probs[n];
-    for (int n = 0; n < NUM_NODES; ++n)
-        probs[n] /= sum;
-    return probs;
+    double z = rand() / (double)RAND_MAX * sum;
+    sum = 0;
+    int j = 0;
+    for (int n = 0; n < NUM_NODES; ++n) {
+        sum += probs[n];
+        if (sum >= z) {
+            j = n;
+            break;
+        }
+    }
+    return j;
 }
 
 // Default constructor for Path
@@ -82,32 +91,16 @@ Path::Path(CostMatrix* costMatrix, PheromoneMatrix* phMatrix) {
     _path.assign(NUM_NODES, 0);
     _path[0] = startNode;
     vector<bool> visited(NUM_NODES, false);
-    int dist = 0;
     int t = startTime;
-    int i, j, dt = 0;
+    int i, j = 0;
     for (int m = 0; m < NUM_NODES - 1; ++m) {
         i = _path[m];
-        j = _path[m + 1];
         visited[i] = true;
-        const vector<double>& probs = _probs(i, t, visited, costMatrix, phMatrix);
-        vector<double> distribution(NUM_NODES, 0);
-        distribution[0] = probs[0];
-        for (int n = 1; n < NUM_NODES; ++n) {
-            distribution[n] = distribution[n - 1] + probs[n];
-        }
-        double z = (double)rand() / RAND_MAX;
-        for (int n = 0; n < NUM_NODES; ++n) {
-            if (distribution[n] > z) {
-                j = n;
-                break;
-            }
-        }
+        j = _pickNext(i, t, visited, costMatrix, phMatrix);
         _path[m + 1] = j;
-        dt = costMatrix->get(i, j, t);
-        dist += dt;
-        t += dt;
+        t += costMatrix->get(i, j, t);
     }
-    _dist = dist;
+    _dist = t - startTime;
 }
 
 // Returns the path vector
